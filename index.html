@@ -636,26 +636,69 @@ function fmtDate(){return new Date().toLocaleDateString('fr-FR',{weekday:'long',
 function ftime(){return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
 function capitalize(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
 
+function phaseForDayInCycle(day,len,rulesLen){
+  rulesLen=rulesLen||5;
+  const lutealLen=14; // la phase lutéale est biologiquement stable, ~14 jours avant les règles suivantes
+  const ovDay=Math.max(10,Math.min(len-3,len-lutealLen));
+  if(day<=rulesLen)return 'menstrual';
+  if(day<=ovDay-2)return 'follicular';
+  if(day<=ovDay+1)return 'ovulation';
+  return 'luteal';
+}
+
 function getCI(){
   if(!ST.hasRules||!ST.periodDates.length)return null;
-  // Calcul cycle moyen depuis les dates saisies
-  const dates=ST.periodDates.map(d=>new Date(d)).sort((a,b)=>a-b);
-  let len=ST.cycleLen;
+  const dates=ST.periodDates.map(d=>new Date(d+'T12:00:00')).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
+  if(!dates.length)return null;
+
+  // Durée moyenne du cycle, calculée entre vraies dates de début saisies (avec filtre anti-aberration)
+  let len=ST.cycleLen||28;
   if(dates.length>=2){
     const diffs=[];
     for(let i=1;i<dates.length;i++)diffs.push(Math.round((dates[i]-dates[i-1])/86400000));
-    len=Math.round(diffs.reduce((a,b)=>a+b,0)/diffs.length);
-    len=Math.max(21,Math.min(35,len));
-    ST.cycleLen=len;
+    const validDiffs=diffs.filter(d=>d>=15&&d<=60);
+    if(validDiffs.length){
+      len=Math.round(validDiffs.reduce((a,b)=>a+b,0)/validDiffs.length);
+      len=Math.max(21,Math.min(45,len));
+    }
   }
+  ST.cycleLen=len;
+
+  // Durée moyenne des règles, calculée depuis periodEnds si disponible
+  let rulesLen=5;
+  if(ST.periodEnds&&ST.periodEnds.length){
+    const durations=[];
+    ST.periodDates.forEach((startStr,i)=>{
+      const endStr=ST.periodEnds[i];
+      if(startStr&&endStr){
+        const s=new Date(startStr+'T12:00:00');
+        const e=new Date(endStr+'T12:00:00');
+        const d=Math.round((e-s)/86400000)+1;
+        if(d>=1&&d<=10)durations.push(d);
+      }
+    });
+    if(durations.length)rulesLen=Math.round(durations.reduce((a,b)=>a+b,0)/durations.length);
+  }
+  ST.rulesLen=rulesLen;
+
   const last=dates[dates.length-1];
-  const diff=Math.floor((new Date()-last)/86400000);
-  const day=(diff%len)+1;
-  const phase=day<=5?'menstrual':day<=13?'follicular':day<=16?'ovulation':'luteal';
+  const todayMid=new Date();todayMid.setHours(12,0,0,0);
+  const diff=Math.floor((todayMid-last)/86400000);
+
+  // Jour réel depuis la dernière vraie date saisie — SANS boucle automatique.
+  // Si elle dépasse la longueur du cycle, c'est un retard réel, pas un nouveau cycle supposé.
+  const day=diff+1;
+  const cycleStart=last;
+  const daysLate=day>len?day-len:0;
+  const isLate=daysLate>=3;
+
+  const phase=phaseForDayInCycle(Math.min(day,len),len,rulesLen);
   const toNext=len-day+1;
-  const ovDay=Math.round(len*0.5);
-  const toOv=day<ovDay?ovDay-day:len-day+ovDay;
-  return{day,phase,toNext,toOv,len};
+  const lutealLen=14;
+  const ovDay=Math.max(10,Math.min(len-3,len-lutealLen));
+  const toOv=day<=ovDay?ovDay-day:(len-day)+ovDay;
+
+  return{day,phase,toNext,toOv,len,cycleStart,isLate,daysLate,rulesLen};
 }
 
 function updateHdr(){
@@ -1411,23 +1454,21 @@ function tabCycle(c,ci,ph){
   const MONTHS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   const todayStr=now.toISOString().split('T')[0];
 
-  // ── Calcul phase pour n'importe quelle date ──
+  // ── Calcul phase pour n'importe quelle date (même logique que getCI) ──
   function getDayPhase(dateStr){
     if(!ST.periodDates.length)return null;
     const sorted=ST.periodDates.map(d=>new Date(d+'T12:00:00')).sort((a,b)=>a-b);
+    const first=sorted[0];
     const last=sorted[sorted.length-1];
     const len=ST.cycleLen||28;
-    const diff=Math.floor((new Date(dateStr+'T12:00:00')-last)/86400000);
-    let d;
-    if(diff>=0){d=(diff%len)+1;}
-    else{
-      // Cherche dans les cycles précédents
-      let prevStart=new Date(last);prevStart.setDate(last.getDate()-len);
-      const diff2=Math.floor((new Date(dateStr+'T12:00:00')-prevStart)/86400000);
-      if(diff2<0||diff2>=len)return null;
-      d=diff2+1;
-    }
-    return d<=5?'menstrual':d<=13?'follicular':d<=16?'ovulation':'luteal';
+    const rulesLen=ST.rulesLen||5;
+    const target=new Date(dateStr+'T12:00:00');
+    if(target<first)return null; // pas de prédiction avant le tout premier cycle enregistré
+    const diff=Math.floor((target-last)/86400000);
+    const cycleIndex=Math.floor(diff/len);
+    const day=diff-cycleIndex*len+1;
+    if(day<1||day>len)return null;
+    return phaseForDayInCycle(day,len,rulesLen);
   }
 
   // ── Calendrier mensuel ──
