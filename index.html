@@ -497,13 +497,18 @@ a{color:inherit;text-decoration:none;}
     <div class="m-handle"></div>
     <div class="m-hdr"><span class="m-title">Confidentialité 🔒</span><button class="m-close" onclick="closeOv('ov-politique')">✕</button></div>
     <p style="font-weight:700;color:var(--text);margin-bottom:4px">📱 Tes données</p>
-    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tout reste sur ton téléphone. Tes données ne sont jamais vendues ni partagées.</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tout reste sur ton téléphone. Tes données ne sont jamais vendues ni partagées à des fins publicitaires.</p>
     <p style="font-weight:700;color:var(--text);margin-bottom:4px">👩🏾‍🦱 Binta et l'IA</p>
-    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tes messages passent par Anthropic (Claude) pour générer une réponse. Anthropic ne les utilise pas pour entraîner ses modèles. Aucune donnée personnelle identifiable n'est transmise.</p>
-    <p style="font-weight:700;color:var(--text);margin-bottom:4px">📊 IPM anonyme</p>
-    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Si tu participes à l'IPM, tes réponses sont 100% anonymes. Aucun lien avec ton profil.</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tes messages passent par Anthropic (Claude), une entreprise basée aux États-Unis, uniquement pour générer une réponse. Anthropic ne les utilise pas pour entraîner ses modèles. Aucune donnée personnelle identifiable n'est transmise.</p>
+    <p style="font-weight:700;color:var(--text);margin-bottom:4px">📊 IPM et Mythes anonymes</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Si tu participes à l'IPM ou au Détecteur de Mythes, tes réponses sont 100% anonymes et stockées en Europe (Irlande). Aucun lien avec ton profil.</p>
+    <p style="font-weight:700;color:var(--text);margin-bottom:4px">⏳ Durée de conservation</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tes données restent sur ton téléphone tant que tu utilises l'app. Tu peux les effacer à tout moment dans Réglages.</p>
+    <p style="font-weight:700;color:var(--text);margin-bottom:4px">✋ Tes droits</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:12px">Tu peux à tout moment voir, exporter ou supprimer toutes tes données depuis Réglages — sans rien demander à personne.</p>
     <p style="font-weight:700;color:var(--text);margin-bottom:4px">👧 Mineures</p>
-    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:18px">Cycle+ est conçu pour les filles de 9 à 30 ans. Aucune pub, aucun tracking.</p>
+    <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:18px">Cycle+ est conçu pour les filles de 9 à 30 ans. Aucune pub, aucun tracking publicitaire, aucune revente de données.</p>
+    <p style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:12px">Cycle+ respecte la loi ivoirienne n°2013-450 relative à la protection des données à caractère personnel, sous la supervision de l'ARTCI, et s'inscrit dans le cadre de la Convention de Malabo de l'Union Africaine sur la cybersécurité et la protection des données.</p>
     <p style="font-size:12px;color:var(--sub);margin-bottom:16px">Contact : <strong>onghappymums@gmail.com</strong> · Juin 2026</p>
     <button class="btn-main w100" onclick="closeOv('ov-politique')">J'ai compris 🌸</button>
   </div>
@@ -1779,8 +1784,9 @@ function openEditProfil(){
 // ── BINTA VIVANTE — greeting & messages proactifs ──
 function buildProactiveGreeting(ci,ph){
   const name=ST.name?' '+ST.name:'';
+  const trustNote=' Au fait : tes messages restent privés, je ne les garde pas et personne ne peut t\'identifier à travers eux — pose-moi tes questions sans gêne 💛';
   if(!ci||!ph){
-    return `Salut${name} ! 🌸 Je suis Binta, ta grande sœur bienveillante. Je suis là pour répondre à toutes tes questions sur ton corps, tes règles, ta santé. Sans gêne, sans jugement — parle-moi de tout 💛`;
+    return `Salut${name} ! 🌸 Je suis Binta, ta grande sœur bienveillante. Je suis là pour répondre à toutes tes questions sur ton corps, tes règles, ta santé. Sans gêne, sans jugement.${trustNote}`;
   }
   // Greeting enrichi avec contexte réel (Mon Cycle en Histoires)
   const stories={
@@ -1790,12 +1796,14 @@ function buildProactiveGreeting(ci,ph){
     luteal:`Salut${name} 🌙 Ton corps se prépare doucement pour le prochain cycle. Si tu te sens plus sensible ces jours-ci, c'est normal — je suis là.`,
   };
   let msg=stories[ph.label==='Menstruation'?'menstrual':ph.label==='Folliculaire'?'follicular':ph.label==='Ovulation'?'ovulation':'luteal']||stories.menstrual;
-  // Ajouter une note sur le journal récent si disponible
+  // Ajouter une note sur le journal récent si disponible (sinon la note de confiance)
   const last7=getJournalLast7();
+  let addedPainNote=false;
   if(last7.length>=2){
     const painDays=last7.filter(j=>j.entry.pain!==null&&j.entry.pain>=3).length;
-    if(painDays>=2)msg+=` Au fait, j'ai vu que tu as noté de la douleur plusieurs fois cette semaine — tu veux qu'on regarde ça ensemble ?`;
+    if(painDays>=2){msg+=` Au fait, j'ai vu que tu as noté de la douleur plusieurs fois cette semaine — tu veux qu'on regarde ça ensemble ?`;addedPainNote=true;}
   }
+  if(!addedPainNote)msg+=trustNote;
   return msg;
 }
 
@@ -2769,7 +2777,64 @@ function openReglages(){
   sh.innerHTML='<span>📤 Partager Cycle+</span><span style="color:var(--sub);font-size:18px">›</span>';
   sh.onclick=shareApp;box.appendChild(sh);
 
+  // ── Mes données (export + suppression) ──
+  const dataLabel=document.createElement('p');
+  dataLabel.style='font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px';
+  dataLabel.textContent='Mes données';
+  box.appendChild(dataLabel);
+
+  const exp=document.createElement('div');exp.className='set-row';
+  exp.innerHTML='<span>📦 Exporter toutes mes données</span><span style="color:var(--sub);font-size:18px">›</span>';
+  exp.onclick=exportAllData;box.appendChild(exp);
+
+  const del=document.createElement('div');del.className='set-row';
+  del.innerHTML='<span style="color:var(--coral)">🗑️ Supprimer toutes mes données</span><span style="color:var(--sub);font-size:18px">›</span>';
+  del.onclick=confirmDeleteAllData;box.appendChild(del);
+
   openOv('ov-reglages');
+}
+
+// ── DONNÉES PERSONNELLES : export & suppression ──
+function exportAllData(){
+  try{
+    const exportObj={
+      exporte_le:new Date().toISOString(),
+      app:'Cycle+ par Happy Mum\'s',
+      donnees:ST,
+    };
+    const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`CyclePlus_mes_donnees_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Tes données ont été téléchargées 📦');
+  }catch(e){showToast('Erreur lors de l\'export');}
+}
+
+function confirmDeleteAllData(){
+  closeOv('ov-reglages');
+  const overlay=document.createElement('div');
+  overlay.style='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px)';
+  const card=document.createElement('div');
+  card.style='background:var(--bg);border-radius:22px;padding:24px;max-width:380px;text-align:center';
+  card.innerHTML=`<div style="font-size:40px;margin-bottom:10px">⚠️</div>
+  <h3 style="font-family:var(--serif);font-size:18px;color:var(--text);margin-bottom:10px">Supprimer toutes tes données ?</h3>
+  <p style="font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:20px">Ton profil, ton cycle, ton journal, tes conversations avec Binta — tout sera effacé définitivement de ton téléphone. Cette action est irréversible.</p>`;
+  const btnRow=document.createElement('div');btnRow.style='display:flex;gap:10px';
+  const cancelBtn=document.createElement('button');
+  cancelBtn.style='flex:1;padding:12px;border-radius:50px;background:var(--border);color:var(--text);border:none;font-weight:700;cursor:pointer;font-family:var(--body)';
+  cancelBtn.textContent='Annuler';cancelBtn.onclick=()=>document.body.removeChild(overlay);
+  const confirmBtn=document.createElement('button');
+  confirmBtn.style='flex:1;padding:12px;border-radius:50px;background:var(--coral);color:#fff;border:none;font-weight:700;cursor:pointer;font-family:var(--body)';
+  confirmBtn.textContent='Supprimer';
+  confirmBtn.onclick=()=>{
+    try{localStorage.removeItem('cycleplus_v1');}catch(e){}
+    document.body.removeChild(overlay);
+    location.reload();
+  };
+  btnRow.appendChild(cancelBtn);btnRow.appendChild(confirmBtn);card.appendChild(btnRow);
+  overlay.appendChild(card);document.body.appendChild(overlay);
 }
 
 function launchApp(){
