@@ -218,13 +218,13 @@ body.dark #nav{background:#1a0a1a;border-top-color:rgba(232,72,95,0.2);}
 /* ── SIDE MENU ── */
 #menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:98;backdrop-filter:blur(3px);}
 #menu-overlay.show{display:block;}
-#sidemenu{position:fixed;top:0;right:-300px;width:278px;height:100vh;z-index:99;background:var(--card);transition:right .32s cubic-bezier(.4,0,.2,1);box-shadow:-6px 0 32px rgba(0,0,0,0.12);overflow-y:auto;display:flex;flex-direction:column;}
+#sidemenu{position:fixed;top:0;right:-300px;bottom:0;width:278px;z-index:99;background:var(--card);transition:right .32s cubic-bezier(.4,0,.2,1);box-shadow:-6px 0 32px rgba(0,0,0,0.12);overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;}
 #sidemenu.open{right:0;}
 .sm-top{background:linear-gradient(135deg,var(--coral),var(--peach));padding:24px 20px 20px;flex-shrink:0;}
 .sm-logo{width:48px;height:48px;border-radius:50%;background:white;padding:4px;object-fit:contain;margin-bottom:10px;}
 .sm-name{font-family:var(--serif);font-size:19px;color:#fff;font-weight:700;}
 .sm-phase{font-size:12px;color:rgba(255,255,255,0.85);margin-top:3px;}
-.sm-list{padding:12px 10px 24px;flex:1;}
+.sm-list{padding:12px 10px calc(28px + env(safe-area-inset-bottom,0px));flex:1;}
 .sm-item{display:flex;align-items:center;gap:13px;padding:13px 12px;border-radius:14px;cursor:pointer;margin-bottom:2px;font-weight:600;font-size:14px;color:var(--text);transition:background .2s;}
 .sm-item:active{background:rgba(232,72,95,0.12);color:var(--coral);}
 .sm-icon{font-size:19px;width:28px;text-align:center;flex-shrink:0;}
@@ -509,7 +509,8 @@ a{color:inherit;text-decoration:none;}
     <p style="font-weight:700;color:var(--text);margin-bottom:4px">👧 Mineures</p>
     <p style="font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:18px">Cycle+ est conçu pour les filles de 9 à 30 ans. Aucune pub, aucun tracking publicitaire, aucune revente de données.</p>
     <p style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:12px">Cycle+ respecte la loi ivoirienne n°2013-450 relative à la protection des données à caractère personnel, sous la supervision de l'ARTCI, et s'inscrit dans le cadre de la Convention de Malabo de l'Union Africaine sur la cybersécurité et la protection des données.</p>
-    <p style="font-size:12px;color:var(--sub);margin-bottom:16px">Contact : <strong>onghappymums@gmail.com</strong> · Juin 2026</p>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:4px">Contact : <strong>onghappymums@gmail.com</strong> · Juin 2026</p>
+    <p style="font-size:11px;color:var(--sub);margin-bottom:16px">Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026</p>
     <button class="btn-main w100" onclick="closeOv('ov-politique')">J'ai compris 🌸</button>
   </div>
 </div>
@@ -1449,7 +1450,7 @@ function tabToday(c,ci,ph){
   }
 
   const sig=document.createElement('p');sig.className='sig';
-  sig.textContent="Cycle+ par Happy Mum's · 2026 ©";
+  sig.textContent="Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026";
   c.appendChild(sig);
 }
 function tabCycle(c,ci,ph){
@@ -1608,7 +1609,7 @@ function tabCycle(c,ci,ph){
   }
 
   const sig=document.createElement('p');sig.className='sig';
-  sig.textContent="Cycle+ par Happy Mum's · 2026 ©";
+  sig.textContent="Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026";
   c.appendChild(sig);
 }
 
@@ -1671,7 +1672,7 @@ function tabCorps(c,ci,ph){
   c.appendChild(guidesCard);
 
   const sig=document.createElement('p');sig.className='sig';
-  sig.textContent="Cycle+ par Happy Mum's · 2026 ©";
+  sig.textContent="Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026";
   c.appendChild(sig);
 }
 
@@ -2094,7 +2095,7 @@ function tabLab(c){
   });
   c.appendChild(gCard);
   const sig=document.createElement('p');sig.className='sig';
-  sig.textContent="Cycle+ par Happy Mum's · 2026 ©";
+  sig.textContent="Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026";
   c.appendChild(sig);
 }
 function resetQuiz(){ST.quizIdx=0;ST.quizAns=null;ST.quizScore=0;ST.quizDone=false;save();tabLab(document.getElementById('content'));}
@@ -2200,7 +2201,7 @@ function tabProfil(c,ci,ph){
   c.appendChild(recap);
 
   const sig=document.createElement('p');sig.className='sig';
-  sig.textContent="Cycle+ par Happy Mum's · 2026 ©";
+  sig.textContent="Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026";
   c.appendChild(sig);
 }
 
@@ -2853,9 +2854,24 @@ window.onload=()=>{
   // Load state
   load();
   if(ST.dark){document.body.classList.add('dark');}
-  // PWA Service Worker
+  // PWA Service Worker avec détection de mise à jour automatique
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    navigator.serviceWorker.register('sw.js').then(reg=>{
+      // Vérifie s'il y a une nouvelle version disponible
+      reg.addEventListener('updatefound',()=>{
+        const newWorker=reg.installing;
+        newWorker.addEventListener('statechange',()=>{
+          if(newWorker.state==='installed'&&navigator.serviceWorker.controller){
+            // Nouvelle version prête — afficher bannière
+            const banner=document.createElement('div');
+            banner.style='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--navy);color:#fff;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);white-space:nowrap';
+            banner.innerHTML='🌸 Nouvelle version disponible !<button style="background:var(--coral);border:none;color:#fff;border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--body)">Mettre à jour</button>';
+            banner.querySelector('button').onclick=()=>window.location.reload();
+            document.body.appendChild(banner);
+          }
+        });
+      });
+    }).catch(()=>{});
   }
   // Splash → onboarding ou app
   setTimeout(()=>{
