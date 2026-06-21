@@ -3381,7 +3381,7 @@ window.onload=()=>{
     setTimeout(()=>{
       sp.style.display='none';
       if(ST.onboardDone){launchApp();}
-      else{obStep=1;renderOb();document.getElementById('onboarding').classList.add('show');}
+      else{obStep=0;renderOb();document.getElementById('onboarding').classList.add('show');}
     },880);
   },2600);
 };
