@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://happymums-cycleplus.netlify.app/sitemap.xml
+Sitemap: https://cycleplus.netlify.app/sitemap.xml
