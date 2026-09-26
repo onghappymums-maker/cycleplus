@@ -1,10 +1,11 @@
 // Cycle+ par Happy Mum's — Service Worker v3
-const CACHE = 'cycleplus-v3';
+const CACHE = 'cycleplus-v5';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './icon-maskable-512.png',
 ];
 
 // Installation — met en cache les assets de base
