@@ -390,12 +390,53 @@ a{color:inherit;text-decoration:none;}
 .hist-sub{font-size:13px;color:var(--sub);margin-top:5px;}
 body.dark .cal-cell.today{box-shadow:0 0 0 2px var(--card),0 0 0 4px #fff;}
 body.dark .ws-day.today .ws-num{border-color:#fff;}
+
+/* ── v4.2 : navigation, onglets internes, accessibilité ── */
+.page-hdr{padding:4px 4px 12px;}
+.page-title{font-family:var(--serif);font-size:24px;color:var(--text);line-height:1.25;}
+.page-sub{font-size:15px;color:var(--sub);margin-top:4px;line-height:1.5;}
+.subtabs{display:flex;gap:6px;background:rgba(232,72,95,.08);padding:5px;border-radius:50px;margin-bottom:14px;}
+.subtab{flex:1;min-height:44px;padding:8px 6px;border-radius:50px;font-size:15px;font-weight:700;color:var(--sub);transition:all .2s;}
+.subtab.on{background:var(--card);color:var(--coral);box-shadow:0 2px 8px rgba(232,72,95,.15);}
+.chat-wrap.with-tabs{height:calc(100dvh - 250px);}
+.js-done{font-size:15px;font-weight:700;color:#2E7D5B;margin-bottom:4px;}
+.js-sum{font-size:15px;color:var(--sub);line-height:1.6;}
+.help-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1.5px solid rgba(178,34,52,.25);border-radius:20px;padding:14px 16px;margin-bottom:13px;box-shadow:var(--shadow-card);}
+.help-i{font-size:26px;}.help-t{flex:1;font-size:14px;color:var(--sub);line-height:1.5;}.help-t b{display:block;font-size:16px;color:#B22234;margin-bottom:2px;}
+.help-a,.lr-a,.dr-a{color:var(--sub);font-size:22px;}
+.link-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 4px;min-height:52px;border-bottom:1px solid var(--border);}
+.link-row:last-child{border-bottom:none;}
+.lr-i{font-size:22px;width:30px;text-align:center;}.lr-t{flex:1;font-size:14px;color:var(--sub);line-height:1.45;}.lr-t b{display:block;font-size:16px;color:var(--text);font-weight:600;}
+.day-row{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:11px 2px;border-bottom:1px solid var(--border);min-height:48px;}
+.dr-date{flex:1;font-size:15px;color:var(--text);font-weight:600;}.dr-ic{font-size:14px;color:var(--sub);}
+.empty-txt{font-size:15px;color:var(--sub);line-height:1.6;padding:6px 0;}
+.ipm-q{border:none;margin:0 0 18px;padding:0;}
+.ipm-q legend{font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.5;padding:0;}
+.ipm-opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);font-size:15px;color:var(--text);margin-bottom:7px;cursor:pointer;min-height:48px;}
+.ipm-opt input{width:20px;height:20px;accent-color:var(--coral);flex-shrink:0;}
+.ipm-opt.on{border-color:var(--coral);background:rgba(232,72,95,.1);font-weight:700;}
+.ipm-q.missing legend{color:#B22234;}
+.ipm-miss{font-size:14px;color:#B22234;font-weight:600;margin-top:4px;}
+:focus-visible{outline:3px solid #8B6FE8;outline-offset:2px;border-radius:10px;}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
+  #petals,.hero-bubble{display:none!important;}
+}
+@media (max-width:360px){
+  .nav-label{font-size:11px;}
+  .trk-ring{width:180px;height:180px;}
+  .trk-big{font-size:32px;}
+  .date-quick{grid-template-columns:1fr;}
+  .cal-cell{font-size:14px;}
+  .cyc-actions{flex-direction:column;}
+  .subtab{font-size:14px;}
+}
 </style>
 </head>
 <body>
 
 <div id="conf-layer"></div>
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="petals">
   <div class="p">🌸</div><div class="p">🌺</div><div class="p">🌸</div>
   <div class="p">💮</div><div class="p">🌸</div><div class="p">🌺</div>
@@ -435,11 +476,11 @@ body.dark .ws-day.today .ws-num{border-color:#fff;}
   </header>
   <main id="content" class="fadeUp" role="main" aria-live="polite"></main>
   <nav id="nav" role="navigation" aria-label="Navigation principale">
-    <button class="nav-btn act" data-t="today"><span class="nav-icon">🏠</span><span class="nav-label" id="navlbl-today">Accueil</span><div class="nav-dot"></div></button>
-    <button class="nav-btn" data-t="corps"><span class="nav-icon">🩸</span><span class="nav-label" id="navlbl-corps">Corps</span><div class="nav-dot"></div></button>
-    <button class="nav-btn" data-t="binta"><span class="nav-icon">👩🏾‍🦱</span><span class="nav-label" id="navlbl-binta">Binta</span><div class="nav-dot"></div></button>
-    <button class="nav-btn" data-t="lab"><span class="nav-icon">🧠</span><span class="nav-label" id="navlbl-lab">Lab</span><div class="nav-dot"></div></button>
-    <button class="nav-btn" data-t="profil"><span class="nav-icon">👤</span><span class="nav-label" id="navlbl-profil">Profil</span><div class="nav-dot"></div></button>
+    <button class="nav-btn act" type="button" data-t="today" onclick="goTab('today')"><span class="nav-icon" aria-hidden="true">🏠</span><span class="nav-label" id="navlbl-today">Accueil</span><div class="nav-dot"></div></button>
+    <button class="nav-btn" type="button" data-t="cycle" onclick="goTab('cycle')"><span class="nav-icon" aria-hidden="true">📅</span><span class="nav-label" id="navlbl-cycle">Mon cycle</span><div class="nav-dot"></div></button>
+    <button class="nav-btn" type="button" data-t="bienetre" onclick="goTab('bienetre')"><span class="nav-icon" aria-hidden="true">🌿</span><span class="nav-label" id="navlbl-bienetre">Bien-être</span><div class="nav-dot"></div></button>
+    <button class="nav-btn" type="button" data-t="comprendre" onclick="goTab('comprendre')"><span class="nav-icon" aria-hidden="true">💬</span><span class="nav-label" id="navlbl-comprendre">Comprendre</span><div class="nav-dot"></div></button>
+    <button class="nav-btn" type="button" data-t="profil" onclick="goTab('profil')"><span class="nav-icon" aria-hidden="true">👤</span><span class="nav-label" id="navlbl-profil">Profil</span><div class="nav-dot"></div></button>
   </nav>
 </div>
 
@@ -452,22 +493,16 @@ body.dark .ws-day.today .ws-num{border-color:#fff;}
     <div class="sm-phase" id="sm-phase">par Happy Mum's 🇨🇮</div>
   </div>
   <div class="sm-list">
-    <button class="sm-item" type="button" onclick="closeMenu();goTab('cycle')"><span class="sm-icon">📅</span><span id="sm-cycle">Mon cycle</span></button>
-    <button class="sm-item" type="button" onclick="closeMenu();showRemede()"><span class="sm-icon">🌿</span><span id="sm-remede">Mon remède local</span></button>
-    <button class="sm-item" type="button" onclick="closeMenu();openOv('ov-favoris')"><span class="sm-icon">⭐</span><span id="sm-favoris">Mes favoris</span></button>
-    <button class="sm-item" type="button" onclick="closeMenu();openPF()"><span class="sm-icon">🌸</span><span id="sm-debuts">Mes débuts</span></button>
+    <button class="sm-item" type="button" onclick="closeMenu();openUrgence()"><span class="sm-icon">🆘</span><span id="sm-urgences">Urgences et contacts</span></button>
+    <button class="sm-item" type="button" onclick="closeMenu();openPharma()"><span class="sm-icon">💊</span><span id="sm-pharmacies">Pharmacies partenaires</span></button>
     <div class="sm-div"></div>
     <button class="sm-item" type="button" onclick="closeMenu();openPasseport()"><span class="sm-icon">📋</span><span id="sm-passeport">Mon Passeport Menstruel</span></button>
     <button class="sm-item" type="button" onclick="closeMenu();openIPM()"><span class="sm-icon">📊</span><span id="sm-ipm">Indice de Précarité (IPM)</span></button>
     <button class="sm-item" type="button" onclick="closeMenu();openMythes()"><span class="sm-icon">🔍</span><span id="sm-mythes">Détecteur de Mythes</span></button>
     <button class="sm-item" type="button" onclick="closeMenu();openObservatoire()"><span class="sm-icon">🌍</span><span id="sm-observatoire">Observatoire Cycle+</span></button>
-    <div class="sm-div"></div>
-    <button class="sm-item" type="button" onclick="closeMenu();openPharma()"><span class="sm-icon">💊</span><span id="sm-pharmacies">Pharmacies partenaires</span></button>
-    <button class="sm-item" type="button" onclick="closeMenu();openUrgence()"><span class="sm-icon">🆘</span><span id="sm-urgences">Urgences et contacts</span></button>
     <button class="sm-item" type="button" onclick="closeMenu();openParents()"><span class="sm-icon">👨‍👩‍👧</span><span id="sm-parents">Pour parents / profs</span></button>
     <div class="sm-div"></div>
     <button class="sm-item" type="button" onclick="closeMenu();openReglages()"><span class="sm-icon">⚙️</span><span id="sm-reglages">Réglages</span></button>
-    <div class="sm-div"></div>
     <button class="sm-item" type="button" onclick="closeMenu();openApropos()"><span class="sm-icon">ℹ️</span><span id="sm-apropos">À propos de Happy Mum's</span></button>
     <button class="sm-item" type="button" onclick="closeMenu();openOv('ov-politique')"><span class="sm-icon">🔒</span><span id="sm-confidentialite">Confidentialité</span></button>
   </div>
@@ -916,6 +951,8 @@ function applyStaticTranslations(){
     if(el)el.textContent=tr(key);
   });
   const en=ST.lang==='en';
+  [['navlbl-today','Accueil','Home'],['navlbl-cycle','Mon cycle','My cycle'],['navlbl-bienetre','Bien-être','Wellbeing'],['navlbl-comprendre','Comprendre','Learn'],['navlbl-profil','Profil','Profile']]
+    .forEach(([id,f,e])=>{const el=document.getElementById(id);if(el)el.textContent=en?e:f;});
   const pf=document.getElementById('pol-fr'),pe=document.getElementById('pol-en');
   if(pf&&pe){pf.hidden=en;pe.hidden=!en;}
   const set=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
@@ -984,17 +1021,17 @@ const REM_EN={
 const REM=REM_FR; // rétro-compatibilité
 
 const PH_FR={
-  menstrual:{label:'Menstruation',emoji:'🌙',color:'#E94E77',color2:'#C2185B',bg:'rgba(233,78,119,0.13)',msg:'Ton corps se repose et se régénère. Moment de lâcher prise, de chaleur et de douceur.',en:'Basse',hu:'Introspective',co:'Repos, tisanes chaudes, bouillotte. Sois douce avec toi-même.'},
-  follicular:{label:'Folliculaire',emoji:'🌱',color:'#4CAF6D',color2:'#2E8B57',bg:'rgba(123,211,137,0.16)',msg:'Ton énergie remonte, ta créativité s\'éveille. Tout devient possible.',en:'Montante',hu:'Optimiste',co:'Lance tes projets, socialise, exprime-toi librement.'},
-  ovulation:{label:'Ovulation',emoji:'☀️',color:'#E0A100',color2:'#FFD166',bg:'rgba(255,209,102,0.2)',msg:'Tu rayonnes. C\'est le pic de ton énergie et de ta confiance en toi.',en:'Haute',hu:'Confiante',co:'Prends des décisions importantes. Tu es à ton maximum.'},
-  luteal:{label:'Lutéale',emoji:'🌙',color:'#8B6FE8',color2:'#6247C9',bg:'rgba(167,139,250,0.15)',msg:'Ton corps se prépare doucement. Écoute tes besoins profonds sans culpabilité.',en:'Décroissante',hu:'Sensible',co:'Réduis tes engagements. Nourris-toi bien. Dors suffisamment.'},
+  menstrual:{label:'Menstruation',emoji:'🌙',color:'#E94E77',color2:'#C2185B',bg:'rgba(233,78,119,0.13)',msg:'Ton corps se renouvelle. Beaucoup se sentent plus fatiguées ces jours-ci : écoute ce dont tu as besoin.',en:'Basse',hu:'Introspective',co:'Chaleur sur le ventre, boisson chaude, repos si tu peux. Sois douce avec toi-même.'},
+  follicular:{label:'Folliculaire',emoji:'🌱',color:'#4CAF6D',color2:'#2E8B57',bg:'rgba(123,211,137,0.16)',msg:'Certaines ressentent plus d\'énergie pendant cette phase. Observe ce qui est vrai pour toi.',en:'Montante',hu:'Optimiste',co:'Si tu te sens en forme, c\'est peut-être un bon moment pour avancer sur tes projets.'},
+  ovulation:{label:'Ovulation',emoji:'☀️',color:'#E0A100',color2:'#FFD166',bg:'rgba(255,209,102,0.2)',msg:'Pour beaucoup, l\'énergie et la confiance sont plus hautes vers l\'ovulation. Chaque corps est différent.',en:'Haute',hu:'Confiante',co:'Profite des jours où tu te sens bien, sans te mettre la pression les autres jours.'},
+  luteal:{label:'Lutéale',emoji:'🌙',color:'#8B6FE8',color2:'#6247C9',bg:'rgba(167,139,250,0.15)',msg:'Ton corps se prépare au prochain cycle. Certaines se sentent plus sensibles ou fatiguées : c\'est fréquent.',en:'Décroissante',hu:'Sensible',co:'Mange à ta faim, dors suffisamment et accorde-toi des pauses si tu en ressens le besoin.'},
 };
 
 const PH_EN={
-  menstrual:{...PH_FR.menstrual,label:'Menstruation',msg:'Your body is resting and renewing itself. A time to let go, for warmth and gentleness.',en:'Low',hu:'Introspective',co:'Rest, hot herbal tea, a hot water bottle. Be gentle with yourself.'},
-  follicular:{...PH_FR.follicular,label:'Follicular',msg:'Your energy is rising, your creativity is waking up. Anything feels possible.',en:'Rising',hu:'Optimistic',co:'Start your projects, see friends, express yourself freely.'},
-  ovulation:{...PH_FR.ovulation,label:'Ovulation',msg:'You are glowing. This is your peak of energy and self-confidence.',en:'High',hu:'Confident',co:'Make important decisions. You are at your best.'},
-  luteal:{...PH_FR.luteal,label:'Luteal',msg:'Your body is gently getting ready. Listen to your deeper needs without guilt.',en:'Declining',hu:'Sensitive',co:'Cut back on commitments. Eat well. Get enough sleep.'},
+  menstrual:{...PH_FR.menstrual,label:'Menstruation',msg:'Your body is renewing itself. Many feel more tired these days: listen to what you need.',en:'Low',hu:'Introspective',co:'Warmth on your belly, a hot drink, rest if you can. Be gentle with yourself.'},
+  follicular:{...PH_FR.follicular,label:'Follicular',msg:'Some people feel more energetic during this phase. Notice what is true for you.',en:'Rising',hu:'Optimistic',co:'If you feel good, it may be a nice time to move your projects forward.'},
+  ovulation:{...PH_FR.ovulation,label:'Ovulation',msg:'For many, energy and confidence are higher around ovulation. Every body is different.',en:'High',hu:'Confident',co:'Enjoy the days you feel good, without pressuring yourself on the others.'},
+  luteal:{...PH_FR.luteal,label:'Luteal',msg:'Your body is getting ready for the next cycle. Some feel more sensitive or tired: that\'s common.',en:'Declining',hu:'Sensitive',co:'Eat enough, sleep well and allow yourself breaks if you feel the need.'},
 };
 const PH=new Proxy({},{get:(_,k)=>(ST.lang==='en'?PH_EN:PH_FR)[k]});
 
@@ -1184,17 +1221,18 @@ function toggleSound(){
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ MENU ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function openMenu(){
-  document.getElementById('sidemenu').classList.add('open');
+  document.getElementById('sidemenu').classList.add('open');dialogOpened(document.getElementById('sidemenu'));
   document.getElementById('menu-overlay').classList.add('show');
 }
 function closeMenu(){
-  document.getElementById('sidemenu').classList.remove('open');
+  const sm=document.getElementById('sidemenu');const wasOpen=sm.classList.contains('open');
+  sm.classList.remove('open');if(wasOpen)dialogClosed();
   document.getElementById('menu-overlay').classList.remove('show');
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ MODALS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function openOv(id){soundOpen();document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
-function closeOv(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+function openOv(id){soundOpen();const el=document.getElementById(id);el.classList.add('open');document.body.style.overflow='hidden';dialogOpened(el.querySelector('.modal-sheet')||el);}
+function closeOv(id){const el=document.getElementById(id);if(!el.classList.contains('open'))return;el.classList.remove('open');document.body.style.overflow='';dialogClosed();}
 document.querySelectorAll('.ov-bg').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeOv(o.id);}));
 
 // FAVORIS
@@ -1558,12 +1596,12 @@ function logPeriodEnd(dateStr){
 function openSheet(build){
   const ov=document.createElement('div');ov.className='sheet-ov';
   const sh=document.createElement('div');sh.className='sheet';sh.setAttribute('role','dialog');sh.setAttribute('aria-modal','true');
-  const close=()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),220);document.body.style.overflow='';};
+  let closed=false;const close=()=>{if(closed)return;closed=true;ov.classList.remove('show');setTimeout(()=>ov.remove(),220);document.body.style.overflow='';dialogClosed();};
   ov.onclick=e=>{if(e.target===ov)close();};
   const h=document.createElement('div');h.className='m-handle';sh.appendChild(h);
   build(sh,close);
   ov.appendChild(sh);document.body.appendChild(ov);
-  requestAnimationFrame(()=>ov.classList.add('show'));
+  requestAnimationFrame(()=>ov.classList.add('show'));dialogOpened(sh);
   return close;
 }
 
@@ -1859,10 +1897,215 @@ function tabCycle(c,ci,ph){
   c.appendChild(sig);
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ NOUVELLE NAVIGATION (v4.2) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const APP_VERSION='4.2';
+function sigEl(){const s=document.createElement('p');s.className='sig';s.textContent=L("Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026","Cycle+ by Happy Mum's NGO · All rights reserved © 2026");return s;}
+// Onglets internes (segmented control accessible)
+function buildSubTabs(c,key,items,def){
+  const cur=ST[key]&&items.some(i=>i[0]===ST[key])?ST[key]:def;
+  const bar=document.createElement('div');bar.className='subtabs';bar.setAttribute('role','tablist');
+  items.forEach(([id,label])=>{
+    const b=document.createElement('button');b.type='button';b.className='subtab'+(id===cur?' on':'');
+    b.setAttribute('role','tab');b.setAttribute('aria-selected',id===cur?'true':'false');b.textContent=label;
+    b.onclick=()=>{if(ST[key]===id)return;ST[key]=id;save();soundNav();renderTab();};
+    bar.appendChild(b);
+  });
+  c.appendChild(bar);
+  return cur;
+}
+function pageTitle(c,txt,sub){
+  const h=document.createElement('div');h.className='page-hdr';
+  h.innerHTML=`<h2 class="page-title">${txt}</h2>${sub?`<p class="page-sub">${sub}</p>`:''}`;
+  c.appendChild(h);
+}
+
+// ── Carte « Mon journal du jour » (résumé + bouton) pour l'accueil ──
+function buildJournalSummary(c){
+  const t=todayYmd();const j=(ST.journalLog||{})[t];const sy=(ST.symptomsLog||{})[t]||[];
+  const MOODS=ST.lang==='en'?['Sad','Neutral','Good','Great','Perfect']:['Triste','Neutre','Bien','Super','Parfait'];
+  const FLOWS=ST.lang==='en'?['None','Light','Medium','Heavy']:['Aucun','Léger','Moyen','Abondant'];
+  const card=document.createElement('div');card.className='card';
+  let body;
+  if(j||sy.length){
+    const parts=[];
+    if(j&&j.mood!==null&&j.mood!==undefined)parts.push(`${tr('journal_mood')} : ${MOODS[j.mood]}`);
+    if(j&&j.pain!==null&&j.pain!==undefined)parts.push(`${L('Douleur','Pain')} : ${j.pain}/5`);
+    if(j&&j.flow!==null&&j.flow!==undefined)parts.push(`${L('Flux','Flow')} : ${FLOWS[j.flow]}`);
+    if(sy.length)parts.push(sy.length+' '+L(sy.length>1?'symptômes':'symptôme',sy.length>1?'symptoms':'symptom'));
+    body=`<p class="js-done">✅ ${L('Journée notée','Day logged')}</p><p class="js-sum">${parts.join(' · ')||'—'}</p>`;
+  }else{
+    body=`<p class="js-sum">${L('Humeur, douleur, flux, symptômes… Note ta journée en 30 secondes.','Mood, pain, flow, symptoms… Log your day in 30 seconds.')}</p>`;
+  }
+  card.innerHTML=`<p class="card-title">📓 ${L('Mon journal du jour','My daily journal')}</p>${body}`;
+  const row=document.createElement('div');row.style='display:flex;gap:9px;margin-top:12px';
+  const b1=document.createElement('button');b1.type='button';b1.className='btn-main';b1.style='flex:1;justify-content:center';
+  b1.textContent=(j||sy.length)?L('Modifier','Edit'):L('📝 Noter ma journée','📝 Log my day');b1.onclick=()=>openDaySheet(t);
+  const b2=document.createElement('button');b2.type='button';b2.className='btn-sec';b2.style='flex:1';
+  b2.textContent=L('Mon historique','My history');b2.onclick=()=>{ST.subB='journal';goTab('bienetre');};
+  row.appendChild(b1);row.appendChild(b2);card.appendChild(row);
+  c.appendChild(card);
+}
+function buildHelpCard(c){
+  const d=document.createElement('button');d.type='button';d.className='help-card';
+  d.innerHTML=`<span class="help-i">🆘</span><span class="help-t"><b>${L('Besoin d\'aide ?','Need help?')}</b>${L('Douleur très forte, saignement inhabituel, ou tu te sens en danger : voir les contacts d\'aide.','Very strong pain, unusual bleeding, or you feel unsafe: see help contacts.')}</span><span class="help-a">›</span>`;
+  d.onclick=openUrgence;c.appendChild(d);
+}
+
+// ── Onglet Bien-être : Journal · Soulager · Favoris ──
+function tabBienetre(c,ci,ph){
+  pageTitle(c,L('Mon bien-être 🌿','My wellbeing 🌿'),L('Ton journal, tes symptômes et ce qui te soulage.','Your journal, your symptoms and what helps.'));
+  const sub=buildSubTabs(c,'subB',[['journal',L('Journal','Journal')],['soulager',L('Soulager','Relief')],['favoris',L('Favoris','Favorites')]],'journal');
+  if(sub==='journal'){
+    buildJournalCard(c,ci,ph);
+    // Symptômes du jour
+    const todayStr=todayYmd();if(!ST.symptomsLog)ST.symptomsLog={};
+    ST.symptoms=ST.symptomsLog[todayStr]||[];
+    const sd=document.createElement('div');sd.className='card';
+    sd.innerHTML=`<p class="card-title">${tr('corps_symptoms_title')}</p>`;
+    const cr=document.createElement('div');cr.className='chip-row';
+    getSymp().forEach((s,si)=>{
+      const k=SYMP[si];const b=document.createElement('button');b.type='button';
+      b.className='chip'+(ST.symptoms.includes(k)?' on':'');b.textContent=s;b.setAttribute('aria-pressed',ST.symptoms.includes(k));
+      b.onclick=()=>{ST.symptoms=ST.symptoms.includes(k)?ST.symptoms.filter(x=>x!==k):[...ST.symptoms,k];
+        if(ST.symptoms.length)ST.symptomsLog[todayStr]=[...ST.symptoms];else delete ST.symptomsLog[todayStr];
+        save();b.classList.toggle('on',ST.symptoms.includes(k));b.setAttribute('aria-pressed',ST.symptoms.includes(k));};
+      cr.appendChild(b);
+    });
+    sd.appendChild(cr);c.appendChild(sd);
+    buildChartCard(c);
+    // Journées précédentes
+    const keys=[...new Set([...Object.keys(ST.journalLog||{}),...Object.keys(ST.symptomsLog||{})])].sort().reverse().slice(0,10);
+    const MOODE=['😔','😐','🙂','😊','🥰'];const FE=['🚫','💧','🩸','🔴'];
+    const hc=document.createElement('div');hc.className='card';
+    hc.innerHTML=`<p class="card-title">🗓️ ${L('Mes derniers jours notés','My last logged days')}</p>`;
+    if(!keys.length)hc.insertAdjacentHTML('beforeend',`<p class="empty-txt">${L('Rien de noté pour l\'instant. Ton premier jour noté apparaîtra ici 🌸','Nothing logged yet. Your first logged day will appear here 🌸')}</p>`);
+    keys.forEach(k=>{
+      const j=(ST.journalLog||{})[k]||{};const sy=(ST.symptomsLog||{})[k]||[];
+      const r=document.createElement('button');r.type='button';r.className='day-row';
+      r.innerHTML=`<span class="dr-date">${fmtLong(k)}</span><span class="dr-ic">${j.mood!=null?MOODE[j.mood]:''} ${j.flow!=null&&j.flow>0?FE[j.flow]:''} ${j.pain!=null?'🤕'+j.pain:''} ${sy.length?'· '+sy.length+' '+L('sympt.','sympt.'):''}</span><span class="dr-a">›</span>`;
+      r.onclick=()=>openDaySheet(k);hc.appendChild(r);
+    });
+    const all=document.createElement('button');all.type='button';all.className='btn-sec w100';all.style.marginTop='12px';
+    all.textContent=L('📅 Noter un autre jour dans le calendrier','📅 Log another day in the calendar');all.onclick=()=>goTab('cycle');
+    hc.appendChild(all);c.appendChild(hc);
+  }else if(sub==='soulager'){
+    if(ST.pays){
+      const remSet=ST.lang==='en'?REM_EN:REM_FR;const rem=remSet[ST.pays]||remSet['Autre'];
+      const rc=document.createElement('div');rc.className='card';
+      rc.innerHTML=`<p class="card-title">🌿 ${tr('today_remedy_from')} · ${ST.pays}</p>
+      <div style="display:flex;gap:11px;align-items:flex-start;margin-top:4px"><span style="font-size:28px;flex-shrink:0">🫖</span>
+      <div><p style="font-size:17px;font-weight:700;color:var(--coral);margin-bottom:4px">${rem.r}</p>
+      <p style="font-size:15px;color:var(--sub);line-height:1.65">${rem.d}</p>
+      <p style="font-size:13px;color:var(--sub);margin-top:8px;font-style:italic">${ST.lang==='en'?DISCLAIMER_EN:DISCLAIMER_FR}</p></div></div>`;
+      c.appendChild(rc);
+    }
+    const gc=document.createElement('div');gc.className='card';
+    gc.innerHTML=`<p class="card-title">${tr('corps_guides_title')}</p>`;
+    getGuides().forEach((g,idx)=>{
+      const d=document.createElement('button');d.type='button';d.className='guide-card';d.style.cssText='width:100%;text-align:left';
+      d.innerHTML=`<span style="font-size:24px">${g.i}</span><div style="flex:1"><p style="font-size:16px;font-weight:600;color:var(--text)">${g.t}</p>
+      <span style="font-size:12px;color:var(--coral);background:rgba(232,72,95,0.09);padding:2px 8px;border-radius:8px;font-weight:700">${g.g}</span></div><span style="color:var(--sub);font-size:20px">›</span>`;
+      d.onclick=()=>openGuide(idx);gc.appendChild(d);
+    });
+    c.appendChild(gc);
+    buildHelpCard(c);
+  }else{
+    const fc=document.createElement('div');fc.className='card';
+    fc.innerHTML=`<p class="card-title">⭐ ${L('Mes favoris','My favorites')}</p>`;
+    if(!ST.favorites||!ST.favorites.length){
+      fc.insertAdjacentHTML('beforeend',`<p class="empty-txt">${L('Aucun favori pour l\'instant 🌸 Appuie sur ⭐ dans une réponse de Binta ou sur ☆ dans un guide pour le garder ici.','No favorites yet 🌸 Tap ⭐ on a Binta answer or ☆ on a guide to keep it here.')}</p>`);
+    }else ST.favorites.forEach((f,i)=>{
+      const d=document.createElement('div');d.className='fav-item';
+      d.innerHTML=`<div class="fav-item-text">${f.text}</div><div style="font-size:13px;color:var(--sub);margin-top:5px">${f.date}</div>`;
+      const del=document.createElement('button');del.type='button';del.className='fav-del';del.textContent='🗑️ '+tr('btn_supprimer');
+      del.onclick=()=>{ST.favorites.splice(i,1);save();renderTab();};d.appendChild(del);fc.appendChild(d);
+    });
+    c.appendChild(fc);
+  }
+  c.appendChild(sigEl());
+}
+
+// ── Onglet Comprendre : Binta · Apprendre ──
+function tabComprendre(c,ci,ph){
+  const sub=buildSubTabs(c,'subC',[['binta','👩🏾‍🦱 Binta'],['learn',L('🧠 Apprendre','🧠 Learn')]],'binta');
+  if(sub==='binta'){tabBinta(c,ci,ph);const w=c.querySelector('.chat-wrap');if(w)w.classList.add('with-tabs');return;}
+  const inner=document.createElement('div');c.appendChild(inner);
+  tabLab(inner);
+  // Raccourcis pédagogiques
+  const more=document.createElement('div');more.className='card';
+  more.innerHTML=`<p class="card-title">✨ ${L('Pour aller plus loin','Go further')}</p>`;
+  [['🌸',L('Mes premières règles','My first period'),L('5 étapes pour tout comprendre, sans gêne','5 steps to understand it all, no shame'),openPF],
+   ['🔍',L('Détecteur de mythes','Myth detector'),L('Vrai ou faux ? Binta t\'explique','True or false? Binta explains'),openMythes],
+   ['👨‍👩‍👧',L('Pour parents et profs','For parents & teachers'),L('Comment en parler avec une fille','How to talk about it with a girl'),openParents]]
+  .forEach(([i,t,s,fn])=>{
+    const b=document.createElement('button');b.type='button';b.className='link-row';
+    b.innerHTML=`<span class="lr-i">${i}</span><span class="lr-t"><b>${t}</b>${s}</span><span class="lr-a">›</span>`;
+    b.onclick=fn;more.appendChild(b);
+  });
+  inner.insertBefore(more,inner.querySelector('.sig'));
+}
+
+// ── Profil : outils et réglages regroupés ──
+function buildProfilTools(c){
+  const groups=[
+    [L('Mes outils','My tools'),[
+      ['📋',L('Mon passeport menstruel','My period passport'),openPasseport],
+      ['📊',L('Indice de précarité (IPM)','Period poverty index (IPM)'),openIPM],
+      ['🌍',L('Observatoire Cycle+','Cycle+ Observatory'),openObservatoire]]],
+    [L('Aide près de moi','Help near me'),[
+      ['🆘',L('Urgences et contacts','Emergencies & contacts'),openUrgence],
+      ['💊',L('Pharmacies partenaires','Partner pharmacies'),openPharma]]],
+    [L('Mon compte','My account'),[
+      ['⚙️',L('Réglages et sauvegarde','Settings & backup'),openReglages],
+      ['🔒',L('Confidentialité','Privacy'),()=>openOv('ov-politique')],
+      ['📤',L('Partager Cycle+','Share Cycle+'),shareApp],
+      ['ℹ️',L('À propos de Happy Mum\'s','About Happy Mum\'s'),openApropos]]],
+  ];
+  groups.forEach(([title,items])=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML=`<p class="card-title">${title}</p>`;
+    items.forEach(([i,t,fn])=>{const b=document.createElement('button');b.type='button';b.className='link-row';
+      b.innerHTML=`<span class="lr-i">${i}</span><span class="lr-t"><b>${t}</b></span><span class="lr-a">›</span>`;b.onclick=fn;card.appendChild(b);});
+    c.appendChild(card);
+  });
+}
+
+// ── Fenêtres accessibles : Échap, focus piégé, focus restauré ──
+const _focusStack=[];
+function _focusables(el){return [...el.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&x.offsetParent!==null);}
+function topDialog(){
+  const sheets=[...document.querySelectorAll('.sheet-ov.show')];if(sheets.length)return {el:sheets[sheets.length-1],close:()=>sheets[sheets.length-1].click()};
+  const ov=[...document.querySelectorAll('.ov-bg.open')];if(ov.length)return {el:ov[ov.length-1],close:()=>closeOv(ov[ov.length-1].id)};
+  if(document.getElementById('sidemenu')&&document.getElementById('sidemenu').classList.contains('open'))return {el:document.getElementById('sidemenu'),close:closeMenu};
+  return null;
+}
+document.addEventListener('keydown',e=>{
+  const d=topDialog();if(!d)return;
+  if(e.key==='Escape'){e.preventDefault();d.close();return;}
+  if(e.key==='Tab'){
+    const f=_focusables(d.el);if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    else if(!d.el.contains(document.activeElement)){e.preventDefault();first.focus();}
+  }
+});
+function dialogOpened(el){
+  _focusStack.push(document.activeElement);
+  el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+  const t=el.querySelector('.m-title,.sheet-title');if(t){if(!t.id)t.id='dlg-'+Math.random().toString(36).slice(2,7);el.setAttribute('aria-labelledby',t.id);}
+  setTimeout(()=>{const f=_focusables(el);(f[0]||el).focus({preventScroll:true});},80);
+}
+function dialogClosed(){const p=_focusStack.pop();if(p&&p.focus&&document.contains(p))setTimeout(()=>p.focus({preventScroll:true}),30);}
+
 function goTab(t){
+  if(t==='binta'){ST.subC='binta';t='comprendre';}
+  else if(t==='lab'){ST.subC='learn';t='comprendre';}
+  else if(t==='corps'){t='bienetre';}
   ST.tab=t;save();
   soundNav();
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('act',b.dataset.t===t));
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.toggle('act',b.dataset.t===t);if(b.dataset.t===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+  const cEl=document.getElementById('content');if(cEl)cEl.scrollTop=0;
   renderTab();
 }
 function renderTab(){
@@ -1870,12 +2113,16 @@ function renderTab(){
   const c=document.getElementById('content');
   c.innerHTML='';c.className='fadeUp';
   const ci=getCI();const ph=ci?PH[ci.phase]:null;
+  if(ST.tab==='binta'){ST.subC='binta';ST.tab='comprendre';}
+  if(ST.tab==='lab'){ST.subC='learn';ST.tab='comprendre';}
+  if(ST.tab==='corps')ST.tab='bienetre';
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.toggle('act',b.dataset.t===ST.tab);if(b.dataset.t===ST.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if(ST.tab==='today')tabToday(c,ci,ph);
   else if(ST.tab==='cycle')tabCycle(c,ci,ph);
-  else if(ST.tab==='corps')tabCorps(c,ci,ph);
-  else if(ST.tab==='binta')tabBinta(c,ci,ph);
-  else if(ST.tab==='lab')tabLab(c);
+  else if(ST.tab==='bienetre')tabBienetre(c,ci,ph);
+  else if(ST.tab==='comprendre')tabComprendre(c,ci,ph);
   else if(ST.tab==='profil')tabProfil(c,ci,ph);
+  else tabToday(c,ci,ph);
 }
 
 // TODAY
@@ -2228,63 +2475,6 @@ function tabToday(c,ci,ph){
   // Suivi des règles tout en haut
   const trk=document.createElement('div');buildTrackerCard(trk,ci);c.insertBefore(trk.firstChild,c.firstChild);
 
-  // Remède local
-  if(ST.pays){
-    const remSet=ST.lang==='en'?REM_EN:REM_FR;
-    const rem=remSet[ST.pays]||remSet['Autre'];
-    const disclaimer=ST.lang==='en'?DISCLAIMER_EN:DISCLAIMER_FR;
-    const remCard=document.createElement('div');remCard.className='card';
-    remCard.innerHTML=`<p class="card-title">🌿 ${tr('today_remedy_from')} · ${ST.pays}</p>
-    <div style="display:flex;gap:11px;align-items:flex-start;margin-top:4px">
-      <span style="font-size:26px;flex-shrink:0">🫖</span>
-      <div><p style="font-size:16px;font-weight:700;color:var(--coral);margin-bottom:4px">${rem.r}</p>
-      <p style="font-size:15px;color:var(--sub);line-height:1.65">${rem.d}</p>
-      <p style="font-size:13px;color:var(--sub);margin-top:7px;font-style:italic">${disclaimer}</p></div>
-    </div>`;
-    c.appendChild(remCard);
-  }
-
-  // Symptômes — tout en createElement pour que les handlers fonctionnent
-  const sd=document.createElement('div');sd.className='card';
-  const sdTitle=document.createElement('p');sdTitle.className='card-title';sdTitle.textContent=tr('today_how_feel');
-  sd.appendChild(sdTitle);
-  const cr=document.createElement('div');cr.className='chip-row';
-  getSymp().forEach((s,si)=>{
-    const sFr=SYMP[si];
-    const b=document.createElement('button');
-    b.className='chip'+(ST.symptoms.includes(sFr)?' on':'');
-    b.textContent=s;
-    b.onclick=()=>{
-      if(!ST.symptomsLog)ST.symptomsLog={};
-      if(ST.symptoms.includes(sFr)){
-        ST.symptoms=ST.symptoms.filter(x=>x!==sFr);
-      }else{
-        ST.symptoms.push(sFr);
-        confetti();
-      }
-      ST.symptomsLog[todayStr]=[...ST.symptoms];
-      save();
-      b.classList.toggle('on',ST.symptoms.includes(sFr));
-      renderRecap();
-    };
-    cr.appendChild(b);
-  });
-  sd.appendChild(cr);
-
-  // Récap du jour
-  const recap=document.createElement('div');recap.id='symp-recap';
-  function renderRecap(){
-    if(ST.symptoms.length){
-      recap.style.cssText='margin-top:10px;padding:9px 12px;background:rgba(232,72,95,0.07);border-radius:11px;font-size:14px;color:var(--sub);line-height:1.6;';
-      recap.textContent=tr('corps_today')+' : '+ST.symptoms.join(' · ');
-    }else{
-      recap.style.cssText='';recap.textContent='';
-    }
-  }
-  renderRecap();
-  sd.appendChild(recap);
-  c.appendChild(sd);
-
   // Conseil de phase
   if(ph){
     const conseil=document.createElement('div');
@@ -2295,8 +2485,9 @@ function tabToday(c,ci,ph){
     c.appendChild(conseil);
   }
 
-  // Journal du jour
-  buildJournalCard(c,ci,ph);
+  // Journal du jour (résumé) + aide
+  buildJournalSummary(c);
+  buildHelpCard(c);
 
   // Notifications
   if(!ST.notifEnabled&&'Notification' in window&&Notification.permission==='default'){
@@ -2822,7 +3013,7 @@ function tabLab(c){
         else if(i===ST.quizAns)b.style.cssText='background:rgba(232,72,95,0.12);border-color:var(--coral);color:var(--coral)';
       }
       b.textContent=opt;
-      b.onclick=()=>{if(ST.quizAns!==null)return;ST.quizAns=i;if(i===q.ans){ST.quizScore++;confetti();}save();tabLab(document.getElementById('content'));};
+      b.onclick=()=>{if(ST.quizAns!==null)return;ST.quizAns=i;if(i===q.ans){ST.quizScore++;confetti();}save();renderTab();};
       opts.appendChild(b);
     });
     qc.appendChild(opts);
@@ -2833,7 +3024,7 @@ function tabLab(c){
       nx.onclick=()=>{
         if(ST.quizIdx+1>=QZ.length){ST.quizDone=true;if(!ST.badges.quiz)ST.badges.quiz=true;}
         else{ST.quizIdx++;ST.quizAns=null;}
-        save();tabLab(document.getElementById('content'));
+        save();renderTab();
       };
       qc.appendChild(nx);
     }
@@ -2877,7 +3068,7 @@ function tabLab(c){
   sig.textContent=L("Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026","Cycle+ by Happy Mum's NGO · All rights reserved © 2026");
   c.appendChild(sig);
 }
-function resetQuiz(){ST.quizIdx=0;ST.quizAns=null;ST.quizScore=0;ST.quizDone=false;save();tabLab(document.getElementById('content'));}
+function resetQuiz(){ST.quizIdx=0;ST.quizAns=null;ST.quizScore=0;ST.quizDone=false;save();renderTab();}
 
 // PROFIL
 function tabProfil(c,ci,ph){
@@ -2929,8 +3120,6 @@ function tabProfil(c,ci,ph){
     c.appendChild(lvlCard);
   }
 
-  // Graphique 30 jours
-  buildChartCard(c);
 
   // Mon Double du Futur 🔮
   const tendances=buildTendances();
@@ -2953,7 +3142,7 @@ function tabProfil(c,ci,ph){
   grid.style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px';
   const stats=[
     {i:'📅',v:datesCount?datesCount+' '+tr(datesCount>1?'profil_cycles_plural':'profil_cycles_singular'):tr('profil_no_cycle'),l:tr('profil_cycles_logged'),c:'var(--coral)'},
-    {i:'📓',v:journalCount?journalCount+' '+tr(journalCount>1?'profil_days_plural':'profil_days_singular'):tr('profil_start'),l:tr('profil_journal_days'),c:'var(--teal)',action:()=>goTab('today')},
+    {i:'📓',v:journalCount?journalCount+' '+tr(journalCount>1?'profil_days_plural':'profil_days_singular'):tr('profil_start'),l:tr('profil_journal_days'),c:'var(--teal)',action:()=>{ST.subB='journal';goTab('bienetre');}},
     {i:'👩🏾‍🦱',v:msgCount?msgCount+' '+tr(msgCount>1?'profil_questions_plural':'profil_questions_singular'):tr('profil_talk_to_me'),l:tr('profil_binta_questions'),c:'#A0529E',action:()=>goTab('binta')},
     {i:'⏳',v:weeksSince>0?tr('profil_since')+' '+weeksSince+' '+tr('profil_weeks'):tr('profil_start'),l:tr('profil_my_tracking'),c:'var(--teal)'},
   ];
@@ -2978,6 +3167,7 @@ function tabProfil(c,ci,ph){
     recap.appendChild(conseil);
   }
   c.appendChild(recap);
+  buildProfilTools(c);
 
   const sig=document.createElement('p');sig.className='sig';
   sig.textContent=L("Cycle+ by ONG Happy Mum's · Tous droits réservés © 2026","Cycle+ by Happy Mum's NGO · All rights reserved © 2026");
@@ -3565,38 +3755,32 @@ function openIPM(){
   const answers=new Array(questions.length).fill(null);
   const score={0:0,1:1,2:2,3:2}; // scoring per option index
 
+  const fsets=[];
   questions.forEach((q,qi)=>{
-    const qDiv=document.createElement('div');qDiv.style='margin-bottom:16px';
-    const qText=document.createElement('p');qText.style='font-size:15px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.6';qText.textContent=(qi+1)+'. '+q.q;
-    qDiv.appendChild(qText);
-    const optsDiv=document.createElement('div');optsDiv.style='display:flex;flex-direction:column;gap:7px';
+    const fs=document.createElement('fieldset');fs.className='ipm-q';
+    const lg=document.createElement('legend');lg.textContent=(qi+1)+'. '+q.q;fs.appendChild(lg);
     q.opts.forEach((opt,oi)=>{
-      const btn=document.createElement('button');
-      btn.style='padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);font-size:15px;color:var(--text);text-align:left;cursor:pointer;font-family:var(--body);transition:all .2s';
-      btn.textContent=opt;
-      btn.onclick=()=>{
-        answers[qi]=oi;
-        optsDiv.querySelectorAll('button').forEach((b,bi)=>{
-          b.style.background=bi===oi?'rgba(232,72,95,0.12)':'var(--bg)';
-          b.style.borderColor=bi===oi?'var(--coral)':'var(--border)';
-          b.style.color=bi===oi?'var(--coral)':'var(--text)';
-          b.style.fontWeight=bi===oi?'700':'400';
-        });
-        // Enable submit if all answered
-        const allAnswered=answers.every(a=>a!==null);
-        submitBtn.disabled=!allAnswered;
-        submitBtn.style.opacity=allAnswered?'1':'0.5';
-      };
-      optsDiv.appendChild(btn);
+      const lb=document.createElement('label');lb.className='ipm-opt';
+      const r=document.createElement('input');r.type='radio';r.name='ipm-q'+qi;r.value=oi;
+      r.onchange=()=>{answers[qi]=oi;fs.classList.remove('missing');fs.querySelectorAll('.ipm-opt').forEach(x=>x.classList.toggle('on',x.contains(r)));const m=fs.querySelector('.ipm-miss');if(m)m.remove();};
+      lb.appendChild(r);lb.appendChild(document.createTextNode(opt));fs.appendChild(lb);
     });
-    qDiv.appendChild(optsDiv);
-    box.appendChild(qDiv);
+    fsets.push(fs);box.appendChild(fs);
   });
 
-  const submitBtn=document.createElement('button');submitBtn.className='btn-main w100';
+  const submitBtn=document.createElement('button');submitBtn.type='button';submitBtn.className='btn-main w100';
   submitBtn.textContent=tr('ipm_submit');
-  submitBtn.disabled=true;submitBtn.style.opacity='0.5';
+  const guard=()=>{
+    const miss=answers.findIndex(a=>a===null);
+    if(miss<0)return true;
+    fsets.forEach((fs,i)=>{if(answers[i]===null&&!fs.querySelector('.ipm-miss')){fs.classList.add('missing');fs.insertAdjacentHTML('beforeend',`<p class="ipm-miss" role="alert">${L('Choisis une réponse pour cette question','Choose an answer for this question')}</p>`);}});
+    fsets[miss].scrollIntoView({behavior:'smooth',block:'center'});
+    const first=fsets[miss].querySelector('input');if(first)setTimeout(()=>first.focus({preventScroll:true}),300);
+    showToast(L(`Il manque ${answers.filter(a=>a===null).length} réponse(s)`,`${answers.filter(a=>a===null).length} answer(s) missing`),2500);
+    return false;
+  };
   submitBtn.onclick=()=>{
+    if(!guard())return;
     const totalScore=answers.reduce((sum,a,i)=>sum+score[a],0);
     const max=questions.length*2;
     const pct=Math.round((totalScore/max)*100);
@@ -3720,6 +3904,7 @@ function openReglages(){
   const del=document.createElement('div');del.className='set-row';
   del.innerHTML=`<span style="color:var(--coral)">🗑️ ${tr('reglages_delete')}</span><span style="color:var(--sub);font-size:18px">›</span>`;
   del.onclick=confirmDeleteAllData;box.appendChild(del);
+  const ver=document.createElement('p');ver.style='font-size:13px;color:var(--sub);text-align:center;margin-top:16px';ver.textContent=`Cycle+ · ${L('version','version')} ${APP_VERSION}`;box.appendChild(ver);
 
   openOv('ov-reglages');
 }
@@ -3817,7 +4002,8 @@ window.onload=()=>{
             const banner=document.createElement('div');
             banner.style='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--navy);color:#fff;border-radius:50px;padding:12px 20px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);white-space:nowrap';
             banner.innerHTML=L('🌸 Nouvelle version disponible !','🌸 New version available!')+'<button style="background:var(--coral);border:none;color:#fff;border-radius:50px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--body)">'+L('Mettre à jour','Update')+'</button>';
-            banner.querySelector('button').onclick=()=>window.location.reload();
+            banner.querySelector('button').onclick=()=>{save();window.location.reload();};
+            const later=document.createElement('button');later.type='button';later.textContent=L('Plus tard','Later');later.style='background:none;border:none;color:#fff;opacity:.8;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);text-decoration:underline';later.onclick=()=>banner.remove();banner.appendChild(later);banner.setAttribute('role','status');
             document.body.appendChild(banner);
           }
         });
