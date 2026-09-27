@@ -29,7 +29,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="512x512" href="apple-touch-icon.png">
 <!-- Analytics retiré — Cycle+ est une app de santé pour mineures, aucun tracking tiers sans consentement explicite -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -431,6 +431,95 @@ body.dark .ws-day.today .ws-num{border-color:#fff;}
   .cyc-actions{flex-direction:column;}
   .subtab{font-size:14px;}
 }
+
+/* ━━━━━━━━━━ AMBIANCES (thèmes) ━━━━━━━━━━ */
+/* Commun aux ambiances : typo ronde, textes plus confortables */
+body.th-a,body.th-b,body.th-c{font-size:16px;}
+body.th-a #content,body.th-b #content,body.th-c #content{padding:14px 16px 24px;}
+body.th-a .card,body.th-b .card,body.th-c .card{border-radius:26px;padding:20px;}
+body.th-a .card-title,body.th-b .card-title,body.th-c .card-title{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:-.1px;}
+body.th-a .hero,body.th-b .hero,body.th-c .hero{border-radius:28px;}
+body.th-a .hero-phase,body.th-b .hero-phase,body.th-c .hero-phase{font-size:30px;font-weight:800;letter-spacing:-.3px;}
+body.th-a .hero-msg,body.th-b .hero-msg,body.th-c .hero-msg{font-size:16px;line-height:1.6;}
+body.th-a .trk-big,body.th-b .trk-big,body.th-c .trk-big{font-weight:800;font-size:40px;letter-spacing:-.5px;}
+body.th-a .btn-main,body.th-b .btn-main,body.th-c .btn-main{font-family:var(--serif);font-weight:700;letter-spacing:.1px;}
+body.th-a .nav-label,body.th-b .nav-label,body.th-c .nav-label{font-family:var(--serif);font-weight:600;font-size:11.5px;}
+body.th-a #nav,body.th-b #nav,body.th-c #nav{border-top:none;border-radius:26px 26px 0 0;box-shadow:0 -6px 24px rgba(60,10,40,.10);min-height:66px;}
+body.th-a #hdr,body.th-b #hdr,body.th-c #hdr{background:transparent;border-bottom:none;padding:14px 18px 8px;}
+body.th-a #app,body.th-b #app,body.th-c #app{background:transparent;}
+body.th-a .hdr-left h2,body.th-b .hdr-left h2,body.th-c .hdr-left h2,body.th-a #hdr-greet,body.th-b #hdr-greet,body.th-c #hdr-greet{font-family:var(--serif);font-weight:800;font-size:21px!important;}
+body.th-a .sheet-title,body.th-b .sheet-title,body.th-c .sheet-title,body.th-a .page-title,body.th-b .page-title,body.th-c .page-title,body.th-a .m-title,body.th-b .m-title,body.th-c .m-title,body.th-a .cal-title,body.th-b .cal-title,body.th-c .cal-title{font-weight:800;}
+body.th-a #petals,body.th-b #petals,body.th-c #petals{opacity:.45;}
+
+/* A — Framboise : frais, doux, moderne */
+body.th-a{--bg:#FFF3F7;--card:#FFFFFF;--text:#2A1530;--sub:#6B5470;--coral:#E0245E;--coral2:#FF5C8A;--peach:#FF9DBA;
+  --border:rgba(120,30,80,.08);--border-coral:rgba(224,36,94,.22);--serif:'Poppins',sans-serif;--body:'Nunito',sans-serif;
+  --shadow-card:0 10px 30px rgba(170,20,80,.07),0 2px 6px rgba(170,20,80,.04);--shadow-coral:0 10px 24px rgba(224,36,94,.30);
+  background:linear-gradient(170deg,#FFE3EE 0%,#FFF5F8 38%,#F7EEFF 100%) fixed;}
+body.th-a .card{border:none;}
+body.th-a #nav{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);}
+
+/* B — Wax : chaleureux, africain */
+body.th-b{--bg:#FFF4E6;--card:#FFFCF7;--text:#2E1A12;--sub:#6E5446;--coral:#D2415F;--coral2:#F0724A;--peach:#F6A55B;--teal:#15968F;
+  --border:rgba(160,90,40,.14);--border-coral:rgba(210,65,95,.25);--serif:'Outfit',sans-serif;--body:'Nunito',sans-serif;
+  --shadow-card:0 8px 22px rgba(140,70,20,.08);--shadow-coral:0 10px 22px rgba(210,65,95,.28);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E08A55' stroke-opacity='.30' stroke-width='2.2'%3E%3Ccircle cx='30' cy='30' r='14'/%3E%3Ccircle cx='30' cy='30' r='6'/%3E%3Ccircle cx='90' cy='90' r='14'/%3E%3Ccircle cx='90' cy='90' r='6'/%3E%3Cpath d='M75 20 q15 10 0 20 q-15 -10 0 -20z'/%3E%3Cpath d='M15 80 q15 10 0 20 q-15 -10 0 -20z'/%3E%3C/g%3E%3C/svg%3E") ,linear-gradient(170deg,#FFE8CF 0%,#FFF4E6 45%,#FDEBDD 100%) fixed;}
+body.th-b .card{border:1.5px solid rgba(230,170,120,.35);}
+body.th-b #nav{background:#FFFCF7;}
+
+/* C — Nuit douce : prune profonde, lumineux */
+body.th-c{--bg:#241030;--card:#351A45;--text:#FFF1F7;--sub:#D5BCE0;--coral:#FF4F8B;--coral2:#FF7AA8;--peach:#FFB0C8;
+  --border:rgba(255,255,255,.09);--border-coral:rgba(255,79,139,.35);--serif:'Poppins',sans-serif;--body:'Nunito',sans-serif;
+  --shadow-card:0 10px 30px rgba(0,0,0,.28);--shadow-coral:0 10px 26px rgba(255,79,139,.35);
+  background:radial-gradient(circle at 20% 0%,#4A1E5C 0%,#241030 45%,#170A21 100%) fixed;}
+body.th-c .card{border:1px solid rgba(255,255,255,.06);}
+body.th-c #nav{background:#2C1438;}
+body.th-c .nav-label{color:#CDB3D6;}
+body.th-c .toast{background:#fff;color:#241030;}
+body.th-c .cal-cell.today{box-shadow:0 0 0 2px var(--card),0 0 0 4px #fff;}
+body.th-c .ws-day.today .ws-num{border-color:#fff;}
+body.th-c .subtabs{background:rgba(255,255,255,.06);}
+body.th-c .j-note,body.th-c .mood-btn,body.th-c .scale-btn,body.th-c .flow-btn,body.th-c .ob-input,body.th-c .chat-inp{background:rgba(255,255,255,.05);color:var(--text);}
+
+.theme-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px;}
+.theme-sw{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:18px;border:2px solid var(--border);font-size:14px;font-weight:700;color:var(--text);}
+.theme-sw.on{border-color:var(--coral);}
+.tsw{width:100%;height:54px;border-radius:12px;position:relative;display:block;}
+.tsw i{position:absolute;right:8px;bottom:8px;width:18px;height:18px;border-radius:50%;}
+
+/* Ambiances v2 : carte suivi colorée + carte phase teintée */
+body.th-a .tracker{background:linear-gradient(150deg,#FF6F98 0%,#E0245E 55%,#A8127A 100%);border:none;box-shadow:0 16px 36px rgba(224,36,94,.32);}
+body.th-b .tracker{background:linear-gradient(150deg,#F6A55B 0%,#E0604A 50%,#B8325A 100%);border:none;box-shadow:0 16px 36px rgba(210,80,60,.30);position:relative;overflow:hidden;}
+body.th-b .tracker::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.16' stroke-width='3'%3E%3Ccircle cx='30' cy='30' r='14'/%3E%3Ccircle cx='30' cy='30' r='5'/%3E%3Ccircle cx='90' cy='90' r='14'/%3E%3Ccircle cx='90' cy='90' r='5'/%3E%3Cpath d='M75 20 q15 10 0 20 q-15 -10 0 -20z'/%3E%3Cpath d='M15 80 q15 10 0 20 q-15 -10 0 -20z'/%3E%3C/g%3E%3C/svg%3E");opacity:.9;pointer-events:none;}
+body.th-b .tracker>*{position:relative;}
+body.th-c .tracker{background:linear-gradient(150deg,#5B2372 0%,#3A1A4C 60%,#2A1238 100%);border:1px solid rgba(255,79,139,.25);box-shadow:0 0 40px rgba(255,79,139,.18);}
+body.th-a .tracker svg circle:first-child,body.th-b .tracker svg circle:first-child{stroke:rgba(255,255,255,.22);}
+body.th-a .tracker svg circle:last-child,body.th-b .tracker svg circle:last-child{stroke:#fff;}
+body.th-c .tracker svg circle:first-child{stroke:rgba(255,255,255,.08);}
+body.th-c .tracker svg circle:last-child{stroke:#FF4F8B;filter:drop-shadow(0 0 8px rgba(255,79,139,.8));}
+body.th-a .tracker .trk-top,body.th-b .tracker .trk-top,body.th-c .tracker .trk-top{color:rgba(255,255,255,.85);}
+body.th-a .tracker .trk-big,body.th-b .tracker .trk-big,body.th-c .tracker .trk-big{color:#fff;}
+body.th-a .tracker .trk-sub,body.th-b .tracker .trk-sub,body.th-c .tracker .trk-sub{color:rgba(255,255,255,.9);}
+body.th-a .tracker .trk-main,body.th-b .tracker .trk-main{background:#fff;color:var(--coral);box-shadow:0 8px 20px rgba(80,0,30,.18);}
+body.th-a .tracker .trk-note,body.th-b .tracker .trk-note,body.th-c .tracker .trk-note{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff;}
+body.th-a .tracker .week-strip,body.th-b .tracker .week-strip,body.th-c .tracker .week-strip{border-top-color:rgba(255,255,255,.22);}
+body.th-a .tracker .ws-name,body.th-b .tracker .ws-name,body.th-c .tracker .ws-name{color:rgba(255,255,255,.8);}
+body.th-a .tracker .ws-num,body.th-b .tracker .ws-num,body.th-c .tracker .ws-num{color:#fff;}
+body.th-a .tracker .ws-day.today .ws-num,body.th-b .tracker .ws-day.today .ws-num,body.th-c .tracker .ws-day.today .ws-num{border-color:#fff;}
+body.th-a .tracker .ws-day.period .ws-num,body.th-b .tracker .ws-day.period .ws-num,body.th-c .tracker .ws-day.period .ws-num{background:#fff;color:var(--coral);}
+body.th-a .tracker .ws-day.pred .ws-num,body.th-b .tracker .ws-day.pred .ws-num,body.th-c .tracker .ws-day.pred .ws-num{border-color:#fff;color:#fff;}
+body.th-a .tracker .ws-day.fertile .ws-num,body.th-b .tracker .ws-day.fertile .ws-num,body.th-c .tracker .ws-day.fertile .ws-num{background:rgba(255,255,255,.2);color:#fff;}
+body.th-a .tracker .ws-dot,body.th-b .tracker .ws-dot,body.th-c .tracker .ws-dot{background:#fff;}
+body.th-a .hero,body.th-b .hero{background:linear-gradient(140deg,color-mix(in srgb,var(--phc) 17%,#fff),color-mix(in srgb,var(--phc) 5%,#fff))!important;box-shadow:var(--shadow-card)!important;border:1.5px solid color-mix(in srgb,var(--phc) 22%,transparent);}
+body.th-c .hero{background:linear-gradient(140deg,color-mix(in srgb,var(--phc) 38%,#351A45),#351A45)!important;box-shadow:var(--shadow-card)!important;}
+body.th-a .hero-day,body.th-b .hero-day{color:var(--sub);}
+body.th-a .hero-phase,body.th-b .hero-phase{color:color-mix(in srgb,var(--phc) 80%,#000);}
+body.th-a .hero-msg,body.th-b .hero-msg{color:var(--text);}
+body.th-a .hero-tag,body.th-b .hero-tag{background:color-mix(in srgb,var(--phc) 15%,#fff);color:color-mix(in srgb,var(--phc) 80%,#000);}
+body.th-a .hero-bubble,body.th-b .hero-bubble{opacity:.35;}
+body.th-b{background-size:120px 120px,auto;}
+body.th-c .cal-cell.fertile,body.th-c .ws-day.fertile .ws-num{background:rgba(26,166,160,.28);color:#8FEDE6;}
+body.th-c .lg-fertile{background:rgba(26,166,160,.5);}
 </style>
 </head>
 <body>
@@ -1171,9 +1260,14 @@ function confetti(){
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ DARK ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function applyTheme(){
+  const t=ST.dark?'c':(ST.theme||'a');
+  document.body.classList.remove('th-a','th-b','th-c');document.body.classList.add('th-'+t);
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='c'?'#241030':t==='b'?'#FFE8CF':'#FFE3EE');
+}
 function toggleDark(){
   ST.dark=!ST.dark;
-  document.body.classList.toggle('dark',ST.dark);
+  document.body.classList.toggle('dark',ST.dark);applyTheme();
   const dl=document.getElementById('dark-label');
   if(dl)dl.textContent=ST.dark?'Mode clair':'Mode sombre';
   save();
@@ -2452,7 +2546,7 @@ function tabToday(c,ci,ph){
     c.innerHTML='';
   }else{
     c.innerHTML=`
-    <div class="hero" style="background:linear-gradient(160deg,rgba(0,0,0,.18),rgba(0,0,0,.34)),linear-gradient(135deg,${ph.color},${ph.color2});box-shadow:0 10px 32px ${ph.color}44;cursor:pointer;" onclick="openPhaseModal()">
+    <div class="hero" style="--phc:${ph.color};background:linear-gradient(160deg,rgba(0,0,0,.18),rgba(0,0,0,.34)),linear-gradient(135deg,${ph.color},${ph.color2});box-shadow:0 10px 32px ${ph.color}44;cursor:pointer;" onclick="openPhaseModal()">
       <span class="hero-bubble" style="left:68%;top:8%;--d:4s">${ph.emoji}</span>
       <span class="hero-bubble" style="left:8%;top:52%;--d:5.5s;--dl:1.2s">🌸</span>
       <span class="hero-bubble" style="left:78%;top:54%;--d:3.8s;--dl:.7s">💕</span>
@@ -3885,6 +3979,19 @@ function openReglages(){
   sh.innerHTML=`<span>📤 ${tr('reglages_share')}</span><span style="color:var(--sub);font-size:18px">›</span>`;
   sh.onclick=shareApp;box.appendChild(sh);
 
+  // ── Ambiance ──
+  const thLbl=document.createElement('p');thLbl.style='font-size:13px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px';
+  thLbl.textContent=L('🎨 Mon ambiance','🎨 My theme');box.appendChild(thLbl);
+  const thRow=document.createElement('div');thRow.className='theme-row';thRow.setAttribute('role','radiogroup');thRow.setAttribute('aria-label',L('Mon ambiance','My theme'));
+  [['a',L('Framboise','Raspberry'),'linear-gradient(160deg,#FFE3EE,#F7EEFF)','#E0245E'],['b',L('Wax','Wax'),'linear-gradient(160deg,#FFE8CF,#FDEBDD)','#D2415F'],['c',L('Nuit','Night'),'linear-gradient(160deg,#4A1E5C,#170A21)','#FF4F8B']].forEach(([k,l,bg,ac])=>{
+    const cur=(ST.dark?'c':(ST.theme||'a'))===k;
+    const b=document.createElement('button');b.type='button';b.className='theme-sw'+(cur?' on':'');b.setAttribute('role','radio');b.setAttribute('aria-checked',cur);
+    b.innerHTML=`<span class="tsw" style="background:${bg}"><i style="background:${ac}"></i></span><span>${l}</span>`;
+    b.onclick=()=>{ST.theme=k;ST.dark=(k==='c');document.body.classList.toggle('dark',ST.dark);applyTheme();save();openReglages();renderTab();};
+    thRow.appendChild(b);
+  });
+  box.appendChild(thRow);
+
   // ── Mes données (export + suppression) ──
   const dataLabel=document.createElement('p');
   dataLabel.style='font-size:13px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px';
@@ -3989,6 +4096,7 @@ window.onload=()=>{
   askPersistentStorage();
   restoreIfNeeded().then(r=>{if(r){if(ST.dark)document.body.classList.add('dark');applyStaticTranslations();setTimeout(()=>showToast(L('🌸 Tes données ont été récupérées','🌸 Your data has been restored'),3500),3200);}});
   if(ST.dark){document.body.classList.add('dark');}
+  applyTheme();
   applyStaticTranslations();
   // PWA Service Worker avec détection de mise à jour automatique
   if('serviceWorker' in navigator){
@@ -4025,3 +4133,4 @@ window.onload=()=>{
 </script>
 </body>
 </html>
+  
