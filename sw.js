@@ -1,5 +1,5 @@
 // Cycle+ par Happy Mum's — Service Worker v3
-const CACHE = 'cycleplus-v10';
+const CACHE = 'cycleplus-v19';
 const ASSETS = [
   './index.html',
   './manifest.json',
