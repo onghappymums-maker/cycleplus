@@ -824,7 +824,7 @@ const TR={
     today_ovulation:'Ovulation',today_today_short:'Aujourd\'hui',today_in:'Dans',today_d:'j',today_period:'Règles',today_soon:'Bientôt',today_cycle:'Cycle',
     today_remedy_from:'Remède de chez toi',today_how_feel:'Comment tu te sens ? 🩷',
     today_phase_tip:'Conseil de ta phase',today_enable_notif:'Activer les notifications',
-    today_notif_desc:'Rappel J-2 avant tes règles, ovulation, journal quotidien.',today_enable_btn:'Activer 🔔',
+    today_notif_desc:'Un rappel 2 jours avant tes règles, en cas de retard, et le soir pour ton journal. Mode discret inclus 🔒',today_enable_btn:'Activer 🔔',
     cycle_date_removed:'Date retirée',cycle_date_saved:'🩸 Date de règles enregistrée !',
     cycle_end_saved:'🏁 Date de fin enregistrée !',
     cycle_mark_as:'Marquer cette date comme :',cycle_mark_start:'Début des règles',cycle_mark_end:'Fin des règles',
@@ -964,7 +964,7 @@ const TR={
     today_ovulation:'Ovulation',today_today_short:'Today',today_in:'In',today_d:'d',today_period:'Period',today_soon:'Soon',today_cycle:'Cycle',
     today_remedy_from:'Remedy from home',today_how_feel:'How are you feeling? 🩷',
     today_phase_tip:'Tip for your phase',today_enable_notif:'Enable notifications',
-    today_notif_desc:'Reminder 2 days before your period, ovulation, daily journal.',today_enable_btn:'Enable 🔔',
+    today_notif_desc:'A reminder 2 days before your period, if it\'s late, and in the evening for your journal. Discreet mode included 🔒',today_enable_btn:'Enable 🔔',
     cycle_date_removed:'Date removed',cycle_date_saved:'🩸 Period date saved!',
     cycle_end_saved:'🏁 End date saved!',
     cycle_mark_as:'Mark this date as:',cycle_mark_start:'Period start',cycle_mark_end:'Period end',
@@ -1910,6 +1910,13 @@ function tabCycle(c,ci,ph){
   else{b1.textContent=L('🩸 Début des règles','🩸 Period started');b1.onclick=askPeriodStart;}
   const b2=document.createElement('button');b2.type='button';b2.className='btn-sec';b2.textContent=L('📝 Noter une journée','📝 Log a day');b2.onclick=()=>openDaySheet(today);
   act.appendChild(b1);act.appendChild(b2);c.appendChild(act);
+  if(pr.last){
+    const rem=document.createElement('button');rem.type='button';rem.className='help-card';rem.style.borderColor='var(--border-coral)';
+    const on='Notification' in window&&ST.notifEnabled&&Notification.permission==='granted';
+    rem.innerHTML=`<span class="help-i">🔔</span><span class="help-t"><b style="color:var(--coral)">${L('Ne rate plus tes règles','Never miss your period')}</b>${on?L('Rappels activés ✓ · Ajoute aussi tes prévisions à ton agenda','Reminders on ✓ · Also add your forecasts to your calendar'):L('Active les rappels et ajoute tes prévisions à ton agenda','Turn on reminders and add your forecasts to your calendar')}</span><span class="help-a">›</span>`;
+    rem.onclick=()=>{if(!on&&'Notification' in window&&Notification.permission!=='denied'){requestNotifications();setTimeout(addToAgenda,900);}else addToAgenda();};
+    c.appendChild(rem);
+  }
 
   // Calendrier
   const cal=document.createElement('div');cal.className='card';
@@ -2483,7 +2490,7 @@ function buildChartCard(c){
 function requestNotifications(){
   if(!('Notification' in window))return;
   Notification.requestPermission().then(p=>{
-    ST.notifEnabled=p==='granted';save();
+    ST.notifEnabled=p==='granted';if(ST.discreet===undefined)ST.discreet=true;save();idbBackup();
     if(p==='granted'){
       showToast(tr('notif_enabled_toast'));
       scheduleNotifications();
@@ -2493,38 +2500,62 @@ function requestNotifications(){
   });
 }
 function scheduleNotifications(){
-  if(!ST.notifEnabled||!('serviceWorker' in navigator))return;
-  navigator.serviceWorker.ready.then(sw=>{
-    const ci=getCI();if(!ci)return;
-    // J-2 avant règles
-    if(ci.toNext===2){
-      setTimeout(()=>{
-        sw.showNotification('Cycle+ 🌸',{
-          body:tr('notif_period_soon'),
-          icon:'/icon-192.png',badge:'/icon-192.png',tag:'period-soon',
-        });
-      },1000);
-    }
-    // Ovulation
-    if(ci.toOv===0){
-      setTimeout(()=>{
-        sw.showNotification('Cycle+ 🦋',{
-          body:tr('notif_ovulation'),
-          icon:'/icon-192.png',badge:'/icon-192.png',tag:'ovulation',
-        });
-      },2000);
-    }
-    // Rappel journal si pas encore rempli
-    const todayKey=todayYmd();
-    if(!ST.journalLog||!ST.journalLog[todayKey]){
-      setTimeout(()=>{
-        sw.showNotification('Cycle+ 📓',{
-          body:tr('notif_journal_reminder'),
-          icon:'/icon-192.png',badge:'/icon-192.png',tag:'journal-reminder',
-        });
-      },3000);
-    }
+  // Rappels calculés par le service worker à partir de la copie locale (aucun serveur)
+  if(!ST.notifEnabled||!('serviceWorker' in navigator)||!('Notification' in window)||Notification.permission!=='granted')return;
+  idbBackup();
+  navigator.serviceWorker.ready.then(async reg=>{
+    try{
+      if('periodicSync' in reg){
+        const st=await navigator.permissions.query({name:'periodic-background-sync'}).catch(()=>({state:'granted'}));
+        if(st.state==='granted')await reg.periodicSync.register('cycle-check',{minInterval:12*60*60*1000});
+      }
+    }catch(e){}
+    setTimeout(()=>{if(reg.active)reg.active.postMessage({type:'check-reminders'});},1200);
   }).catch(()=>{});
+}
+function disableNotifications(){
+  ST.notifEnabled=false;save();
+  if('serviceWorker' in navigator)navigator.serviceWorker.ready.then(reg=>{if(reg.periodicSync)reg.periodicSync.unregister('cycle-check').catch(()=>{});}).catch(()=>{});
+  showToast(L('🔕 Rappels désactivés','🔕 Reminders off'));
+}
+
+// ── Agenda du téléphone (.ics) ──
+function icsDate(s){return s.replace(/-/g,'');}
+function buildICS(){
+  const pr=getPredictions(6);if(!pr.last)return null;
+  const discreet=ST.discreet!==false;const now=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const title=discreet?'🌸 Cycle+':L('🩸 Règles prévues (Cycle+)','🩸 Expected period (Cycle+)');
+  const desc=discreet?L('Petit rappel Cycle+','Cycle+ reminder'):L('Estimation Cycle+ à partir de tes cycles. Ouvre l\'app pour noter le vrai début.','Cycle+ estimate from your cycles. Open the app to log the real start.');
+  let out='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Happy Mums//Cycle+//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n';
+  pr.next.forEach((d,i)=>{
+    out+=`BEGIN:VEVENT\r\nUID:cycleplus-${d}@cycleplus.netlify.app\r\nDTSTAMP:${now}\r\nDTSTART;VALUE=DATE:${icsDate(d)}\r\nDTEND;VALUE=DATE:${icsDate(addDays(d,1))}\r\nSUMMARY:${title}\r\nDESCRIPTION:${desc}\r\nTRANSP:TRANSPARENT\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${title}\r\nTRIGGER:-P1DT15H\r\nEND:VALARM\r\nEND:VEVENT\r\n`;
+  });
+  return out+'END:VCALENDAR\r\n';
+}
+function addToAgenda(){
+  const ics=buildICS();
+  if(!ics){showToast(L('Note d\'abord le début de tes dernières règles','First log the start of your last period'),2600);return;}
+  openSheet((sh,close)=>{
+    sh.insertAdjacentHTML('beforeend',`<h3 class="sheet-title">📅 ${L('Ajouter à mon agenda','Add to my calendar')}</h3>
+      <p class="sheet-sub">${L('Tes 6 prochaines règles prévues, avec un rappel 2 jours avant, à 9 h. Les rappels arrivent même quand Cycle+ est fermée.','Your next 6 expected periods, with a reminder 2 days before, at 9 am. Reminders arrive even when Cycle+ is closed.')}</p>`);
+    const b1=document.createElement('button');b1.type='button';b1.className='btn-main w100';b1.textContent=L('📥 Télécharger pour mon agenda','📥 Download for my calendar');
+    b1.onclick=()=>{
+      const blob=new Blob([ics],{type:'text/calendar'});const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='CyclePlus_previsions.ics';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
+      ST.agendaAdded=todayYmd();save();
+      showToast(L('Ouvre le fichier téléchargé : ton agenda te proposera de l\'ajouter 📅','Open the downloaded file: your calendar will offer to add it 📅'),4200);
+    };
+    sh.appendChild(b1);
+    sh.insertAdjacentHTML('beforeend',`<p class="sheet-sub" style="margin-top:12px;font-size:14px">${L('Marche avec Samsung Calendar, l\'agenda de l\'iPhone et Outlook. Avec Google Agenda, utilise plutôt le bouton ci-dessous (une date à la fois).','Works with Samsung Calendar, iPhone Calendar and Outlook. With Google Calendar, use the button below instead (one date at a time).')}</p>`);
+    const pr=getPredictions(1);const nx=pr.next[0];
+    const discreet=ST.discreet!==false;
+    const gUrl='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(discreet?'🌸 Cycle+':L('🩸 Règles prévues (Cycle+)','🩸 Expected period (Cycle+)'))+'&dates='+icsDate(nx)+'/'+icsDate(addDays(nx,1))+'&details='+encodeURIComponent(discreet?L('Petit rappel Cycle+','Cycle+ reminder'):L('Estimation Cycle+','Cycle+ estimate'));
+    const b2=document.createElement('a');b2.className='btn-sec w100';b2.style.cssText='display:flex;justify-content:center;text-decoration:none;margin-top:4px';b2.href=gUrl;b2.target='_blank';b2.rel='noopener';
+    b2.textContent=L(`Google Agenda : ajouter le ${fmtShort(nx)}`,`Google Calendar: add ${fmtShort(nx)}`);sh.appendChild(b2);
+    sh.insertAdjacentHTML('beforeend',`<p class="sheet-sub" style="margin-top:12px;font-size:13px">${discreet?L('🔒 Mode discret : l\'agenda affichera seulement « 🌸 Cycle+ ».','🔒 Discreet mode: your calendar will only show “🌸 Cycle+”.'):L('Le mot « règles » apparaîtra dans ton agenda. Tu peux activer le mode discret dans Réglages.','The word “period” will appear in your calendar. You can turn on discreet mode in Settings.')} ${L('Pense à refaire l\'ajout quand tu notes de nouvelles règles.','Add again when you log a new period.')}</p>`);
+    const c=document.createElement('button');c.type='button';c.className='sheet-cancel';c.textContent=tr('btn_fermer');c.onclick=close;sh.appendChild(c);
+  });
 }
 
 function tabToday(c,ci,ph){
@@ -3965,9 +3996,20 @@ function openReglages(){
   // Notifications
   if('Notification' in window){
     const nr=document.createElement('div');nr.className='set-row';
-    nr.innerHTML=`<span>🔔 ${tr('reglages_notifications')}</span><span style="font-size:14px;color:${ST.notifEnabled?'#7BC47F':'var(--sub)'};">${ST.notifEnabled?tr('reglages_enabled'):tr('reglages_enable')}</span>`;
-    nr.onclick=requestNotifications;box.appendChild(nr);
+    const on=ST.notifEnabled&&Notification.permission==='granted';
+    nr.innerHTML=`<span>🔔 ${L('Rappels (règles, retard, journal)','Reminders (period, late, journal)')}</span><span style="font-size:14px;font-weight:700;color:${on?'#2E7D5B':'var(--coral)'};">${on?L('Activés ✓','On ✓'):L('Activer','Turn on')}</span>`;
+    nr.onclick=()=>{if(on){disableNotifications();}else if(Notification.permission==='denied'){showToast(L('Les notifications sont bloquées : autorise-les dans les réglages du téléphone pour Cycle+','Notifications are blocked: allow them in your phone settings for Cycle+'),4200);return;}else{requestNotifications();}closeOv('ov-reglages');setTimeout(openReglages,600);};
+    box.appendChild(nr);
+    const mkTog=(label,val,fn)=>{const r=document.createElement('div');r.className='set-row';const sp=document.createElement('span');sp.textContent=label;const t=document.createElement('button');t.type='button';t.className='toggle';t.setAttribute('role','switch');t.setAttribute('aria-checked',val);t.setAttribute('aria-label',label);t.style.background=val?'var(--coral)':'#DEDEDE';const k=document.createElement('div');k.className='toggle-k';k.style.left=val?'23px':'3px';t.appendChild(k);t.onclick=()=>{fn();save();idbBackup();closeOv('ov-reglages');setTimeout(openReglages,200);};r.appendChild(sp);r.appendChild(t);return r;};
+    box.appendChild(mkTog(L('🔒 Mode discret (rappels sans le mot « règles »)','🔒 Discreet mode (no word “period” in reminders)'),ST.discreet!==false,()=>{ST.discreet=!(ST.discreet!==false);}));
+    box.appendChild(mkTog(L('📓 Rappel du journal le soir','📓 Evening journal reminder'),ST.journalReminder!==false,()=>{ST.journalReminder=!(ST.journalReminder!==false);}));
+    const hint=document.createElement('p');hint.style='font-size:13px;color:var(--sub);margin:2px 4px 8px;line-height:1.5';
+    hint.textContent=L('Les rappels marchent quand Cycle+ est installée sur ton téléphone (Android + Chrome). Pour des rappels sûrs à 100 %, ajoute aussi tes prévisions à ton agenda 👇','Reminders work when Cycle+ is installed on your phone (Android + Chrome). For 100% reliable reminders, also add your forecasts to your calendar 👇');
+    box.appendChild(hint);
   }
+  const ag=document.createElement('div');ag.className='set-row';
+  ag.innerHTML=`<span>📅 ${L('Ajouter mes prévisions à mon agenda','Add my forecasts to my calendar')}</span><span style="color:var(--sub);font-size:18px">›</span>`;
+  ag.onclick=()=>{closeOv('ov-reglages');setTimeout(addToAgenda,250);};box.appendChild(ag);
 
   // Modifier profil
   const ep=document.createElement('div');ep.className='set-row';
@@ -4094,6 +4136,7 @@ window.onload=()=>{
   // Load state
   load();
   askPersistentStorage();
+  setTimeout(scheduleNotifications,5000);
   restoreIfNeeded().then(r=>{if(r){if(ST.dark)document.body.classList.add('dark');applyStaticTranslations();setTimeout(()=>showToast(L('🌸 Tes données ont été récupérées','🌸 Your data has been restored'),3500),3200);}});
   if(ST.dark){document.body.classList.add('dark');}
   applyTheme();
@@ -4133,4 +4176,3 @@ window.onload=()=>{
 </script>
 </body>
 </html>
-  
